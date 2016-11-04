@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vue.js  example</title>
+    <style>
+      #demo {
+        font-family: 'Helvetica', Arial, sans-serif;
+      }
+    
+    </style>
+    <!-- Delete ".min" for console warnings in development -->
+    <script src="/static/lib/vue.min.js"></script>
+  </head>
+  <body>
+    <div id="demo">
+        <form action='/login' method='POST'>
+            <label for='username'>User Name</label>
+            <input name='username'></input>
+            <label for='password' >Password</label>
+            <input name='password' type='password'></input>
+            <button type='submit'>Login</button>
+        </form>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
