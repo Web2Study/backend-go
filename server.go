@@ -86,14 +86,19 @@ func main() {
 	e.GET("/public", accessible)
 
 	// Restricted group
-	r := e.Group("/admin")
+	r := e.Group("/api")
 	jwtConfig := middleware.DefaultJWTConfig
 	jwtConfig.ContextKey = "user"
 	jwtConfig.TokenLookup = "cookie:token"
 	jwtConfig.SigningKey = []byte("secret")
 
-	r.Use(middleware.JWTWithConfig(jwtConfig))
-	r.GET("", restricted)
+	//r.Use(middleware.JWTWithConfig(jwtConfig))
+	//r.GET("", restricted)
+	// Routes
+	r.POST("/users", createUser)
+	r.GET("/users/:id", getUser)
+	r.PUT("/users/:id", updateUser)
+	r.DELETE("/users/:id", deleteUser)
 
 	e.Run(standard.New(":3000"))
 }
