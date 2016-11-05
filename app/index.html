@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Vue.js  example</title>
-    <style>
-      #demo {
-        font-family: 'Helvetica', Arial, sans-serif;
-      }
-    
-    </style>
-    <!-- Delete ".min" for console warnings in development -->
-    <script src="/static/lib/vue.min.js"></script>
-  </head>
-  <body>
-    <div id="demo">
-        <form action='/login' method='POST'>
-            <label for='username'>User Name</label>
-            <input name='username'></input>
+
+<head>
+	<title>Welcome to Vue</title>
+  <script src="/static/lib/axios.js"></script>
+	<script src="/static/lib/vue.js"></script>
+</head>
+
+<body>
+	<div id="app">
+			<my-login v-show="showLogin" v-on:pass="hideLogin"></my-login>
+      <add-user v-show="!showLogin" :users="users"></add-user>
+      <ul>
+        <li v-for="name in users">{{name}}</li>
+      </ul>
+	</div>
+	<script type="text/x-template" id="login">
+  <div>
+    <form @submit.prevent='onLogin'>
+            <label for='name' >User Name</label>
+            <input name='name' v-model='name'></input>
             <label for='password' >Password</label>
-            <input name='password' type='password'></input>
+            <input name='password' type='password' v-model='password'></input>
             <button type='submit'>Login</button>
-        </form>
-    </div>
-    <script src="/static/app.js"></script>
-  </body>
+     </form>        
+  </div>
+ </script>
+	<script type="text/x-template" id="adduser">
+       <form @submit.prevent='onAddUser'>
+             <label for='name'>User Name</label>
+               <input name='name' v-model='name'></input>
+               <input type="submit" value="Add">
+          </form>
+ </script>
+   <script src="/static/app.js"></script>
+</body>
+
 </html>

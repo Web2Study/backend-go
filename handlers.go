@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -8,19 +9,20 @@ import (
 )
 
 type (
-	user struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
+	User struct {
+		ID       int    `json:"id"`
+		Name     string `json:"name"`
+		Password string `json:"password"`
 	}
 )
 
 var (
-	users = map[int]*user{}
+	users = map[int]*User{}
 	seq   = 1
 )
 
 func createUser(c echo.Context) error {
-	u := &user{
+	u := &User{
 		ID: seq,
 	}
 	if err := c.Bind(u); err != nil {
@@ -28,6 +30,7 @@ func createUser(c echo.Context) error {
 	}
 	users[u.ID] = u
 	seq++
+	log.Println(u.ID, "--", u.Name)
 	return c.JSON(http.StatusCreated, u)
 }
 
@@ -37,7 +40,7 @@ func getUser(c echo.Context) error {
 }
 
 func updateUser(c echo.Context) error {
-	u := new(user)
+	u := new(User)
 	if err := c.Bind(u); err != nil {
 		return err
 	}

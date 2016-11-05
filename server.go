@@ -1,8 +1,8 @@
 package main
 
 import (
+	"log"
 	"net/http"
-
 	"time"
 
 	"github.com/GeertJohan/go.rice"
@@ -14,6 +14,8 @@ import (
 )
 
 /*
+curl -X POST   -H 'Content-Type: application/json' -d '{"username":"alex","password":"1234"}'  localhost:3000/login
+
 curl -X POST \
   -H 'Content-Type: application/json' \
   -d '{"username":"alex","password":"1234"}' \
@@ -22,18 +24,24 @@ curl -X POST \
 curl localhost:1323/restricted -H "Authorization: Bearer {$token}""
 */
 func login(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-
-	if password == "1234" {
+	//name := c.FormValue("name")
+	//password := c.FormValue("password")
+	u := &User{
+		ID: 0,
+	}
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+	log.Println(u.Name, "---", u.Password)
+	if u.Password == "1234" { //just for demo ,you should query from DataBase
 		// Create token
 		token := jwt.New(jwt.SigningMethodHS256)
 
 		// Set claims
 		claims := token.Claims.(jwt.MapClaims)
-		claims["name"] = username
+		claims["name"] = u.Name
 		claims["admin"] = true
-		claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+		claims["exp"] = time.Now().Add(time.Minute * 10).Unix()
 
 		// Generate encoded token and send it as response.
 		t, err := token.SignedString([]byte("secret"))
@@ -43,7 +51,7 @@ func login(c echo.Context) error {
 		cookie := new(echo.Cookie)
 		cookie.SetName("token")
 		cookie.SetValue(t)
-		cookie.SetExpires(time.Now().Add(24 * time.Hour))
+		cookie.SetExpires(time.Now().Add(time.Minute * 10))
 		c.SetCookie(cookie)
 		return c.JSON(http.StatusOK, map[string]string{
 			"token": t,
@@ -92,8 +100,8 @@ func main() {
 	jwtConfig.TokenLookup = "cookie:token"
 	jwtConfig.SigningKey = []byte("secret")
 
-	//r.Use(middleware.JWTWithConfig(jwtConfig))
-	//r.GET("", restricted)
+	r.Use(middleware.JWTWithConfig(jwtConfig))
+	r.GET("", restricted)
 	// Routes
 	r.POST("/users", createUser)
 	r.GET("/users/:id", getUser)
